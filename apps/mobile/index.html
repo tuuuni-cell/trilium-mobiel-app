@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="color-scheme" content="dark light">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Trilium Notes</title>
+    <link rel="icon" href="resources/icon.png">
+    <style>
+        :root {
+            --bg: #1a1a2e;
+            --bg-card: #16213e;
+            --accent: #0f3460;
+            --accent-light: #533483;
+            --text: #e0e0e0;
+            --text-muted: #888;
+            --input-bg: #0f1729;
+            --input-border: #2a3a5c;
+            --btn-primary: #533483;
+            --btn-primary-hover: #6a42a0;
+            --error: #e74c3c;
+            --success: #2ecc71;
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg: #f0f2f5;
+                --bg-card: #ffffff;
+                --accent: #4a90d9;
+                --accent-light: #6c5ce7;
+                --text: #2d3436;
+                --text-muted: #636e72;
+                --input-bg: #f8f9fa;
+                --input-border: #dfe6e9;
+                --btn-primary: #6c5ce7;
+                --btn-primary-hover: #5a4bd1;
+                --error: #e74c3c;
+                --success: #2ecc71;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            padding-top: env(safe-area-inset-top, 20px);
+            padding-bottom: env(safe-area-inset-bottom, 20px);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 16px;
+            background: var(--accent-light);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 32px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--text-muted);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--input-border);
+            border-radius: 10px;
+            background: var(--input-bg);
+            color: var(--text);
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--btn-primary);
+        }
+
+        input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, opacity 0.2s;
+            margin-top: 8px;
+        }
+
+        .btn-primary {
+            background: var(--btn-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--btn-primary-hover);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .status {
+            margin-top: 16px;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .status.error {
+            display: block;
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--error);
+            border: 1px solid rgba(231, 76, 60, 0.2);
+        }
+
+        .status.success {
+            display: block;
+            background: rgba(46, 204, 113, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(46, 204, 113, 0.2);
+        }
+
+        .status.loading {
+            display: block;
+            color: var(--text-muted);
+        }
+
+        .saved-servers {
+            margin-top: 24px;
+            text-align: left;
+        }
+
+        .saved-servers h3 {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .server-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: var(--input-bg);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border: 1px solid var(--input-border);
+        }
+
+        .server-item:hover {
+            border-color: var(--btn-primary);
+        }
+
+        .server-item .server-name {
+            flex: 1;
+            font-size: 14px;
+        }
+
+        .server-item .server-url {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .server-item .remove-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px 8px;
+            font-size: 18px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--input-border);
+            border-top-color: var(--btn-primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 16px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .version {
+            margin-top: 24px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="spinner"></div>
+        <div class="loading-text">Connecting to Trilium...</div>
+    </div>
+
+    <div class="container" id="setup-screen">
+        <div class="logo">📝</div>
+        <h1>Trilium Notes</h1>
+        <p class="subtitle">Connect to your Trilium server</p>
+
+        <div class="card">
+            <div class="form-group">
+                <label for="server-url">Server URL</label>
+                <input
+                    type="url"
+                    id="server-url"
+                    placeholder="https://your-server:8080"
+                    autocapitalize="none"
+                    autocomplete="url"
+                    spellcheck="false"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="server-name">Name (optional)</label>
+                <input
+                    type="text"
+                    id="server-name"
+                    placeholder="My Trilium Server"
+                >
+            </div>
+
+            <button class="btn btn-primary" id="connect-btn" onclick="connectToServer()">
+                Connect
+            </button>
+
+            <div class="status" id="status-message"></div>
+        </div>
+
+        <div class="saved-servers" id="saved-servers-section">
+            <h3>Saved Servers</h3>
+            <div id="saved-servers-list"></div>
+        </div>
+
+        <div class="version" id="app-version"></div>
+    </div>
+
+    <script type="module" src="./src/main.ts"></script>
+</body>
+</html>

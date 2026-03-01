@@ -1,0 +1,38 @@
+{
+  "name": "@triliumnext/mobile",
+  "version": "0.101.3",
+  "description": "Mobile application for TriliumNext Notes using Capacitor",
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "author": {
+    "name": "Trilium Notes Team",
+    "email": "contact@eliandoran.me",
+    "url": "https://triliumnotes.org"
+  },
+  "scripts": {
+    "build:web": "vite build",
+    "dev": "vite",
+    "sync": "cap sync",
+    "sync:android": "cap sync android",
+    "sync:ios": "cap sync ios",
+    "open:android": "cap open android",
+    "open:ios": "cap open ios",
+    "build:android": "cap sync android && cd android && ./gradlew assembleDebug",
+    "build:android:release": "cap sync android && cd android && ./gradlew assembleRelease"
+  },
+  "dependencies": {
+    "@capacitor/android": "7.2.0",
+    "@capacitor/app": "7.0.1",
+    "@capacitor/core": "7.2.0",
+    "@capacitor/ios": "7.2.0",
+    "@capacitor/keyboard": "7.0.1",
+    "@capacitor/preferences": "7.0.1",
+    "@capacitor/splash-screen": "7.0.1",
+    "@capacitor/status-bar": "7.0.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "7.2.0",
+    "typescript": "5.9.3",
+    "vite": "7.3.1"
+  }
+}
