@@ -1,14 +1,14 @@
 # ============================================================================
 # Trilium Notes Mobile - Android APK Builder
 # ============================================================================
-# This Dockerfile builds the Trilium mobile APK using Docker so you don't
-# need to install Android SDK, Java, or Node.js locally.
+# Builds the Trilium mobile APK entirely inside Docker.
+# No Android SDK, Java, or Node.js installation required on host.
 #
-# Usage:
+# Usage (from repo root):
 #   docker build -f apps/mobile/Dockerfile.android -t trilium-mobile-builder .
 #   docker run --rm -v $(pwd)/apps/mobile/output:/output trilium-mobile-builder
 #
-# The APK will be available at: apps/mobile/output/trilium-notes.apk
+# The APK will be at: apps/mobile/output/trilium-notes.apk
 # ============================================================================
 
 FROM ubuntu:24.04
@@ -38,95 +38,125 @@ RUN mkdir -p ${ANDROID_HOME}/cmdline-tools && \
     mv cmdline-tools ${ANDROID_HOME}/cmdline-tools/latest && \
     rm cmdtools.zip
 
-# Accept licenses and install required SDK components
 RUN yes | sdkmanager --licenses > /dev/null 2>&1 && \
     sdkmanager \
     "platform-tools" \
     "platforms;android-35" \
     "build-tools;35.0.0"
 
-# ── Node.js (via NodeSource) ────────────────────────────────────────────────
+# ── Gradle ───────────────────────────────────────────────────────────────────
 
-RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
-    apt-get install -y nodejs && \
-    rm -rf /var/lib/apt/lists/*
-
-# Enable corepack for pnpm
-RUN corepack enable && corepack prepare pnpm@10.30.3 --activate
-
-# ── Build the App ───────────────────────────────────────────────────────────
-
-WORKDIR /app
-
-# Copy only the mobile app and its dependencies
-COPY apps/mobile/package.json apps/mobile/
-COPY apps/mobile/capacitor.config.ts apps/mobile/
-COPY apps/mobile/vite.config.ts apps/mobile/
-COPY apps/mobile/tsconfig.json apps/mobile/
-COPY apps/mobile/index.html apps/mobile/
-COPY apps/mobile/src/ apps/mobile/src/
-COPY apps/mobile/android/ apps/mobile/android/
-
-# Install dependencies directly (no workspace needed for mobile)
-WORKDIR /app/apps/mobile
-RUN npm install --legacy-peer-deps
-
-# Build web assets
-RUN npx vite build
-
-# Copy web assets to Android project
-RUN mkdir -p android/app/src/main/assets/public && \
-    cp -r dist/* android/app/src/main/assets/public/
-
-# Create capacitor.config.json for the Android build
-RUN echo '{ \
-  "appId": "org.triliumnotes.mobile", \
-  "appName": "Trilium Notes", \
-  "webDir": "dist", \
-  "server": { "androidScheme": "https", "allowNavigation": ["*"] }, \
-  "plugins": { \
-    "SplashScreen": { "launchAutoHide": false, "backgroundColor": "#1e1e1e" }, \
-    "Keyboard": { "resize": "body" }, \
-    "StatusBar": { "style": "dark", "backgroundColor": "#1e1e1e" } \
-  }, \
-  "android": { "allowMixedContent": true, "captureInput": true } \
-}' > capacitor.config.json
-
-# Build Android APK
-WORKDIR /app/apps/mobile/android
-
-# Create the gradle wrapper script
-RUN printf '#!/bin/sh\n\
-APP_NAME="Gradle"\n\
-CLASSPATH=gradle/wrapper/gradle-wrapper.jar\n\
-GRADLE_OPTS=""\n\
-exec java $GRADLE_OPTS -classpath "$CLASSPATH" org.gradle.wrapper.GradleWrapperMain "$@"\n' > gradlew && \
-    chmod +x gradlew
-
-# Download gradle wrapper jar
-RUN mkdir -p gradle/wrapper && \
-    wget -q "https://services.gradle.org/distributions/gradle-8.11.1-bin.zip" -O /tmp/gradle.zip && \
+RUN wget -q "https://services.gradle.org/distributions/gradle-8.11.1-bin.zip" -O /tmp/gradle.zip && \
     unzip -q /tmp/gradle.zip -d /opt && \
     rm /tmp/gradle.zip
 
 ENV GRADLE_HOME=/opt/gradle-8.11.1
 ENV PATH=${PATH}:${GRADLE_HOME}/bin
 
-# Build the debug APK
-RUN gradle assembleDebug --no-daemon --stacktrace || true
+# ── Node.js ──────────────────────────────────────────────────────────────────
 
-# ── Output ──────────────────────────────────────────────────────────────────
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
+    apt-get install -y nodejs && \
+    rm -rf /var/lib/apt/lists/*
 
-# Copy script to extract APK
+# ── Project Setup ────────────────────────────────────────────────────────────
+
+WORKDIR /app
+
+# Copy the mobile app source files (NO android/ directory - Capacitor generates it)
+COPY apps/mobile/package.json apps/mobile/
+COPY apps/mobile/vite.config.ts apps/mobile/
+COPY apps/mobile/tsconfig.json apps/mobile/
+COPY apps/mobile/index.html apps/mobile/
+COPY apps/mobile/src/ apps/mobile/src/
+
+WORKDIR /app/apps/mobile
+
+# Install all dependencies
+RUN npm install --legacy-peer-deps
+
+# Create capacitor.config.json (Capacitor CLI needs JSON, not TS, for `cap add`)
+RUN echo '{\
+  "appId": "org.triliumnotes.mobile",\
+  "appName": "Trilium Notes",\
+  "webDir": "dist",\
+  "server": {\
+    "androidScheme": "https",\
+    "allowNavigation": ["*"]\
+  },\
+  "plugins": {\
+    "SplashScreen": {\
+      "launchAutoHide": false,\
+      "backgroundColor": "#1e1e1e",\
+      "showSpinner": true,\
+      "spinnerColor": "#888888"\
+    },\
+    "Keyboard": {\
+      "resize": "body",\
+      "resizeOnFullScreen": true\
+    },\
+    "StatusBar": {\
+      "style": "dark",\
+      "backgroundColor": "#1e1e1e"\
+    }\
+  },\
+  "android": {\
+    "allowMixedContent": true,\
+    "captureInput": true,\
+    "webContentsDebuggingEnabled": true\
+  }\
+}' > capacitor.config.json
+
+# ── Build Web Assets ─────────────────────────────────────────────────────────
+
+RUN npx vite build
+
+# ── Generate Android Project via Capacitor ───────────────────────────────────
+
+# Let Capacitor generate the complete Android native project
+RUN npx cap add android
+
+# Sync web assets and plugins into the Android project
+RUN npx cap sync android
+
+# ── Customize Android Project ────────────────────────────────────────────────
+
+# Allow cleartext traffic for local dev servers
+RUN mkdir -p android/app/src/main/res/xml && \
+    echo '<?xml version="1.0" encoding="utf-8"?>\
+<network-security-config>\
+  <domain-config cleartextTrafficPermitted="true">\
+    <domain includeSubdomains="true">localhost</domain>\
+    <domain includeSubdomains="true">10.0.2.2</domain>\
+  </domain-config>\
+  <base-config cleartextTrafficPermitted="false">\
+    <trust-anchors>\
+      <certificates src="system" />\
+    </trust-anchors>\
+  </base-config>\
+</network-security-config>' > android/app/src/main/res/xml/network_security_config.xml
+
+# Patch AndroidManifest to add networkSecurityConfig and INTERNET permission
+RUN sed -i 's|<application|<application android:networkSecurityConfig="@xml/network_security_config" android:usesCleartextTraffic="true"|' \
+    android/app/src/main/AndroidManifest.xml
+
+# ── Build APK ────────────────────────────────────────────────────────────────
+
+WORKDIR /app/apps/mobile/android
+
+RUN gradle assembleDebug --no-daemon --stacktrace
+
+# ── Output ───────────────────────────────────────────────────────────────────
+
 RUN printf '#!/bin/sh\n\
 set -e\n\
 APK_PATH=$(find /app/apps/mobile/android -name "*.apk" -type f | head -1)\n\
 if [ -z "$APK_PATH" ]; then\n\
-  echo "ERROR: APK not found. Build may have failed."\n\
+  echo "ERROR: APK not found!"\n\
   exit 1\n\
 fi\n\
 cp "$APK_PATH" /output/trilium-notes.apk\n\
-echo "APK copied to /output/trilium-notes.apk"\n\
+echo "SUCCESS: APK copied to /output/trilium-notes.apk"\n\
 ls -lh /output/trilium-notes.apk\n' > /extract-apk.sh && chmod +x /extract-apk.sh
 
 CMD ["/extract-apk.sh"]

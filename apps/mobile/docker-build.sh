@@ -27,11 +27,12 @@ echo ""
 mkdir -p "${OUTPUT_DIR}"
 
 echo "[1/3] Building Docker image (this may take 10-15 min on first run)..."
+echo "     Build context: ${SCRIPT_DIR}/../.."
+echo ""
 docker build \
     -f "${SCRIPT_DIR}/Dockerfile.android" \
     -t trilium-mobile-builder \
-    "${SCRIPT_DIR}/../.." \
-    2>&1 | tail -20
+    "${SCRIPT_DIR}/../.."
 
 echo ""
 echo "[2/3] Extracting APK..."
