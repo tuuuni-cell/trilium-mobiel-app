@@ -1,597 +1,729 @@
 /*
  * ============================================================================
- * TRILIUM SIMPLIFIED UI
+ * TRILIUM SIMPLIFIED UI - Apple Notes / Bear Notes inspired
  * ============================================================================
  *
- * A clean, focused, distraction-free UI layer inspired by Apple Notes and Bear.
- * This file overrides default Trilium styles without modifying core files.
+ * Aggressive UI overhaul for a clean, focused note-taking experience.
+ * Hides chrome, simplifies layout, centers content.
  *
- * Load order: This file must be loaded AFTER style.css to properly override.
- *
- * Sections:
- *   1. Color Palette & Variables
- *   2. Sidebar / Tree
- *   3. Editor & Content
- *   4. Toolbar / Ribbon
- *   5. Tab Bar / Navigation
- *   6. Context Menus
- *   7. General Cleanup
- *   8. Scrollbars
- *   9. Animations & Transitions
+ * Loaded LAST after all other stylesheets.
  * ============================================================================
  */
 
+
 /* ============================================================================
- * 1. COLOR PALETTE & VARIABLES
- *    Calm, muted dark theme inspired by Bear Notes
+ * 1. COLOR PALETTE
  * ============================================================================ */
 
+html,
 :root {
-    /* Core palette */
-    --simplify-bg-primary: #1a1a1e;
-    --simplify-bg-secondary: #141416;
-    --simplify-bg-elevated: #222226;
-    --simplify-bg-hover: rgba(255, 255, 255, 0.06);
-    --simplify-bg-active: rgba(255, 255, 255, 0.1);
+    --theme-style: dark !important;
 
-    --simplify-text-primary: #e0e0e0;
-    --simplify-text-secondary: #8e8e93;
-    --simplify-text-muted: #636366;
+    /* Core palette - warm dark like Bear */
+    --simplify-bg: #1c1c1e !important;
+    --simplify-bg-sidebar: #161618 !important;
+    --simplify-bg-elevated: #2c2c2e !important;
+    --simplify-bg-hover: rgba(255, 255, 255, 0.06) !important;
+    --simplify-bg-active: rgba(255, 255, 255, 0.1) !important;
+    --simplify-text: #e5e5e7 !important;
+    --simplify-text-dim: #98989d !important;
+    --simplify-text-muted: #48484a !important;
+    --simplify-border: rgba(255, 255, 255, 0.06) !important;
+    --simplify-accent: #e8935a !important;
 
-    --simplify-border: rgba(255, 255, 255, 0.08);
-    --simplify-border-subtle: rgba(255, 255, 255, 0.04);
+    /* Override ALL Trilium variables */
+    --main-background-color: #1c1c1e !important;
+    --main-text-color: #e5e5e7 !important;
+    --main-border-color: rgba(255, 255, 255, 0.06) !important;
+    --main-font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif !important;
+    --muted-text-color: #98989d !important;
 
-    --simplify-accent: #e8935a;
-    --simplify-accent-muted: rgba(232, 147, 90, 0.15);
+    --left-pane-background-color: #161618 !important;
+    --left-pane-text-color: #98989d !important;
 
-    /* Reading width */
-    --simplify-max-content-width: 720px;
+    --launcher-pane-background-color: #161618 !important;
+    --launcher-pane-text-color: #98989d !important;
 
-    /* Override Trilium variables */
-    --theme-style: dark;
-    --main-background-color: var(--simplify-bg-primary);
-    --main-text-color: var(--simplify-text-primary);
-    --main-border-color: var(--simplify-border);
-    --muted-text-color: var(--simplify-text-secondary);
+    --accented-background-color: #2c2c2e !important;
+    --more-accented-background-color: #3a3a3c !important;
 
-    --left-pane-background-color: var(--simplify-bg-secondary);
-    --left-pane-text-color: var(--simplify-text-secondary);
+    --hover-item-text-color: #e5e5e7 !important;
+    --hover-item-background-color: rgba(255, 255, 255, 0.06) !important;
+    --hover-item-border-color: transparent !important;
 
-    --launcher-pane-background-color: var(--simplify-bg-secondary);
-    --launcher-pane-text-color: var(--simplify-text-secondary);
+    --active-item-text-color: #e5e5e7 !important;
+    --active-item-background-color: rgba(255, 255, 255, 0.1) !important;
+    --active-item-border-color: transparent !important;
 
-    --accented-background-color: var(--simplify-bg-elevated);
-    --more-accented-background-color: rgba(255, 255, 255, 0.12);
+    --active-tab-background-color: rgba(255, 255, 255, 0.1) !important;
+    --active-tab-hover-background-color: rgba(255, 255, 255, 0.12) !important;
+    --active-tab-text-color: #e5e5e7 !important;
 
-    --hover-item-text-color: var(--simplify-text-primary);
-    --hover-item-background-color: var(--simplify-bg-hover);
-    --hover-item-border-color: transparent;
+    --inactive-tab-background-color: transparent !important;
+    --inactive-tab-hover-background-color: rgba(255, 255, 255, 0.06) !important;
+    --inactive-tab-text-color: #636366 !important;
 
-    --active-item-text-color: var(--simplify-text-primary);
-    --active-item-background-color: var(--simplify-bg-active);
-    --active-item-border-color: transparent;
+    --menu-text-color: #e5e5e7 !important;
+    --menu-background-color: #2c2c2e !important;
 
-    --active-tab-background-color: var(--simplify-bg-active);
-    --active-tab-hover-background-color: rgba(255, 255, 255, 0.12);
-    --active-tab-text-color: var(--simplify-text-primary);
+    --modal-background-color: #2c2c2e !important;
+    --modal-backdrop-color: rgba(0, 0, 0, 0.6) !important;
 
-    --inactive-tab-background-color: transparent;
-    --inactive-tab-hover-background-color: var(--simplify-bg-hover);
-    --inactive-tab-text-color: var(--simplify-text-muted);
+    --link-color: #6bb0d6 !important;
 
-    --menu-text-color: var(--simplify-text-primary);
-    --menu-background-color: var(--simplify-bg-elevated);
+    --scrollbar-background-color: transparent !important;
+    --scrollbar-border-color: transparent !important;
 
-    --modal-background-color: var(--simplify-bg-elevated);
-    --modal-backdrop-color: rgba(0, 0, 0, 0.6);
+    --root-background: #161618 !important;
 
-    --link-color: #7aafcf;
+    --button-background-color: transparent !important;
+    --button-border-color: rgba(255, 255, 255, 0.1) !important;
+    --button-text-color: #e5e5e7 !important;
 
-    --scrollbar-background-color: transparent;
+    --primary-button-background-color: #e8935a !important;
+    --primary-button-text-color: #1c1c1e !important;
+    --primary-button-border-color: #e8935a !important;
 
-    --dropdown-border-color: var(--simplify-border);
-    --dropdown-shadow-opacity: 0.4;
+    --input-text-color: #e5e5e7 !important;
+    --input-background-color: rgba(255, 255, 255, 0.05) !important;
 
-    --root-background: var(--simplify-bg-secondary);
+    --tooltip-background-color: #2c2c2e !important;
+
+    --selection-background-color: rgba(232, 147, 90, 0.25) !important;
+
+    --dropdown-border-color: rgba(255, 255, 255, 0.08) !important;
+
+    --mermaid-theme: dark !important;
+}
+
+/* Body base styles */
+body#trilium-app {
+    background-color: #1c1c1e !important;
+    color: #e5e5e7 !important;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif !important;
+}
+
+#root-widget {
+    background-color: #161618 !important;
 }
 
 
 /* ============================================================================
- * 2. SIDEBAR / TREE
- *    Compact, clean hierarchy with reduced visual noise
+ * 2. HIDE UNNECESSARY UI ELEMENTS
+ *    This is the most important section - removes visual clutter
  * ============================================================================ */
 
-/* Left pane: cleaner background */
+/* --- HIDE RIGHT PANE completely --- */
+#right-pane {
+    display: none !important;
+}
+
+/* --- HIDE RIBBON / TOOLBAR (old layout) --- */
+body#trilium-app .ribbon-container {
+    display: none !important;
+}
+
+/* --- HIDE CLASSIC TOOLBAR (CKEditor top bar) --- */
+body#trilium-app #rest-pane > .classic-toolbar-widget {
+    display: none !important;
+}
+
+/* --- HIDE STATUS BAR / BREADCRUMBS --- */
+body#trilium-app .status-bar {
+    display: none !important;
+}
+
+/* --- HIDE PROMOTED ATTRIBUTES --- */
+body#trilium-app .promoted-attributes-widget {
+    display: none !important;
+}
+
+/* --- HIDE NOTE BADGES (type indicators etc) --- */
+body#trilium-app .note-badges {
+    display: none !important;
+}
+
+/* --- HIDE FLOATING BUTTONS --- */
+body#trilium-app .floating-buttons {
+    display: none !important;
+}
+
+/* --- HIDE CONTENT HEADER (read-only bar, shared info) --- */
+body#trilium-app .content-header-widget {
+    display: none !important;
+}
+
+/* --- HIDE TAB SCROLL ARROWS --- */
+body#trilium-app .tab-scroll-button-left,
+body#trilium-app .tab-scroll-button-right {
+    display: none !important;
+}
+
+/* --- HIDE TAB ROW FILLER drag area --- */
+body#trilium-app .tab-row-filler {
+    flex-grow: 0 !important;
+    min-width: 0 !important;
+}
+
+/* --- HIDE TITLE ROW ACTION BUTTONS (move pane, close pane etc) --- */
+body#trilium-app .title-row .icon-action {
+    display: none !important;
+}
+
+/* --- HIDE NOTE ACTIONS MENU (3-dot in title) --- */
+body#trilium-app .note-actions {
+    opacity: 0 !important;
+    transition: opacity 200ms ease !important;
+}
+body#trilium-app .title-row:hover .note-actions,
+body#trilium-app .inline-title:hover .note-actions {
+    opacity: 0.5 !important;
+}
+
+/* --- HIDE NOTE LIST under notes (child note list) --- */
+body#trilium-app .note-list-widget {
+    display: none !important;
+}
+
+
+/* ============================================================================
+ * 3. LAUNCHER PANE - Minimal icon bar
+ * ============================================================================ */
+
+#launcher-pane {
+    background: #161618 !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.04) !important;
+    border-color: rgba(255, 255, 255, 0.04) !important;
+    width: 44px !important;
+    min-width: 44px !important;
+}
+
+/* Smaller launcher icons */
+#launcher-pane .launcher-button {
+    opacity: 0.5 !important;
+    transition: opacity 150ms ease !important;
+    font-size: 18px !important;
+}
+
+#launcher-pane .launcher-button:hover {
+    opacity: 1 !important;
+}
+
+/* Reduce launcher pane size variable */
+body#trilium-app {
+    --launcher-pane-size: 44px !important;
+}
+
+
+/* ============================================================================
+ * 4. LEFT PANE / SIDEBAR - Compact tree
+ * ============================================================================ */
+
 #left-pane {
-    border-right: 1px solid var(--simplify-border-subtle) !important;
+    background: #161618 !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.04) !important;
 }
 
-/* Tree nodes: more compact */
+/* Tree nodes: compact like Apple Notes sidebar */
 .fancytree-node {
-    height: 30px !important;
-    padding: 2px 6px !important;
+    height: 28px !important;
+    padding: 2px 8px !important;
     border-radius: 6px !important;
-    border: 1px solid transparent !important;
-    font-size: 0.9em !important;
-    gap: 2px;
+    border: none !important;
+    font-size: 13px !important;
+    color: #98989d !important;
 }
 
-/* Reduce icon size in tree */
-.fancytree-custom-icon {
-    font-size: 1em !important;
-    opacity: 0.7;
-}
-
-/* Active node: subtle highlight instead of bold bg */
+/* Active node */
 span.fancytree-active {
-    background-color: var(--simplify-bg-active) !important;
+    background-color: rgba(255, 255, 255, 0.08) !important;
     border-color: transparent !important;
     border-radius: 6px !important;
+    color: #e5e5e7 !important;
 }
 
 span.fancytree-active .fancytree-title {
     font-weight: 600 !important;
+    color: #e5e5e7 !important;
 }
 
-/* Hover: very subtle */
+/* Hover */
 span.fancytree-node:hover {
+    border: none !important;
     border-color: transparent !important;
-    background-color: var(--simplify-bg-hover) !important;
+    background-color: rgba(255, 255, 255, 0.04) !important;
 }
 
-/* Reduce tree indentation for cleaner look */
+/* Icons: smaller, dimmer */
+.fancytree-custom-icon {
+    font-size: 0.9em !important;
+    opacity: 0.5 !important;
+    width: 16px !important;
+    height: 16px !important;
+}
+
+/* Reduce tree indentation */
 .ui-fancytree ul {
-    padding-inline-start: 16px !important;
+    padding-inline-start: 14px !important;
 }
 
 .ui-fancytree > li > ul {
     padding-inline-start: 4px !important;
 }
 
-/* Expander icons: smaller, more subtle */
+/* Expander: subtle chevron */
 .fancytree-node:not(.fancytree-loading) .fancytree-expander:before {
-    font-size: large !important;
-    opacity: 0.5;
+    font-size: 16px !important;
+    opacity: 0.35 !important;
+    margin-inline-end: 2px !important;
 }
 
-/* Hide tree action buttons by default, show on hover */
+/* Invisible expander for non-folders */
+.fancytree-node:not(.fancytree-folder) .fancytree-expander:before {
+    opacity: 0 !important;
+}
+
+/* Hide tree item action buttons completely */
 .tn-icon.tree-item-button {
-    opacity: 0;
-    transition: opacity 150ms ease;
+    display: none !important;
 }
 
-.fancytree-node:hover .tn-icon.tree-item-button {
-    opacity: 0.7;
-    display: inline-block;
+/* Show add-note only on hover, very subtle */
+span.fancytree-node:hover .add-note-button {
+    display: inline-block !important;
+    opacity: 0.3 !important;
 }
 
-/* Tree title: clean typography */
-.fancytree-title {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif !important;
-    letter-spacing: -0.01em;
-}
-
-/* Hide clone & shared indicators for cleaner look */
+/* Hide indicator icons */
 .note-indicator-icon {
-    opacity: 0.4 !important;
-    font-size: 0.7em !important;
+    display: none !important;
+}
+
+/* Title font */
+.fancytree-title {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif !important;
+    font-size: 13px !important;
+}
+
+/* Quick search: cleaner */
+body#trilium-app .quick-search {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+}
+
+body#trilium-app .quick-search input {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: none !important;
+    border-radius: 6px !important;
+    color: #e5e5e7 !important;
+    font-size: 13px !important;
+    padding: 6px 10px !important;
 }
 
 
 /* ============================================================================
- * 3. EDITOR & CONTENT
- *    More whitespace, prominent title, max reading width
+ * 5. TAB BAR - Compact, minimal
  * ============================================================================ */
 
-/* Note title: large and prominent like Apple Notes */
-.note-title-widget input.note-title {
-    font-size: 1.8em !important;
-    font-weight: 700 !important;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif !important;
-    letter-spacing: -0.02em;
-    padding-block: 8px !important;
-    color: var(--simplify-text-primary) !important;
+.tab-row-container {
+    background: #161618 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+    min-height: 34px !important;
+    height: 34px !important;
 }
 
-/* Inline title (new layout): same treatment */
-.inline-title > .inline-title-row .note-title-widget {
-    --note-title-size: 1.8em !important;
+body#trilium-app {
+    --tab-bar-height: 34px !important;
 }
 
-.inline-title > .inline-title-row .note-title-caption {
-    font-weight: 700;
+.tab-row-widget {
+    background: transparent !important;
 }
 
-/* Hide metadata / title details by default */
-.title-details {
-    opacity: 0 !important;
-    transition: opacity 200ms ease;
+/* Individual tabs */
+.note-tab {
+    border-radius: 6px !important;
+    font-size: 12px !important;
+    padding: 3px 10px !important;
+    margin: 2px 1px !important;
+    height: 28px !important;
+    max-height: 28px !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    color: #636366 !important;
+    border: none !important;
 }
 
-.inline-title:hover .title-details,
-.title-row:hover .title-details {
-    opacity: 0.4 !important;
+.note-tab .note-tab-wrapper {
+    gap: 4px !important;
 }
 
-/* Note detail / editor content: max width and more whitespace */
-.note-detail {
-    max-width: var(--simplify-max-content-width) !important;
-    margin-inline: auto !important;
-    padding-inline: 20px !important;
-}
-
-.note-detail-text {
-    padding-top: 16px !important;
-}
-
-/* CKEditor content area: clean typography */
-.ck-content {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif !important;
-    font-size: 1rem !important;
-    line-height: 1.7 !important;
-    color: var(--simplify-text-primary) !important;
-}
-
-/* Better paragraph spacing */
-.ck-content p {
-    margin-bottom: 0.8em !important;
-}
-
-/* Headings in editor: clean hierarchy */
-.ck-content h1 {
-    font-size: 1.6em !important;
-    font-weight: 700 !important;
-    margin-top: 1.5em !important;
-    margin-bottom: 0.5em !important;
-}
-
-.ck-content h2 {
-    font-size: 1.35em !important;
-    font-weight: 600 !important;
-    margin-top: 1.4em !important;
-    margin-bottom: 0.4em !important;
-}
-
-.ck-content h3 {
-    font-size: 1.15em !important;
-    font-weight: 600 !important;
-    margin-top: 1.2em !important;
-    margin-bottom: 0.3em !important;
-}
-
-/* Code blocks: subtle styling */
-.ck-content pre {
-    background: rgba(0, 0, 0, 0.3) !important;
-    border: 1px solid var(--simplify-border) !important;
-    border-radius: 8px !important;
-    padding: 16px !important;
+/* Active tab */
+.note-tab[active],
+.note-tab.active {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #e5e5e7 !important;
+    font-weight: 500 !important;
     box-shadow: none !important;
 }
 
-/* Blockquotes */
-.ck-content blockquote {
-    border-left: 3px solid var(--simplify-accent) !important;
-    padding-left: 16px !important;
-    color: var(--simplify-text-secondary) !important;
-    font-style: italic;
+/* Tab hover */
+.note-tab:hover {
+    background: rgba(255, 255, 255, 0.04) !important;
 }
 
-/* Links */
-.ck-content a {
-    color: var(--link-color) !important;
-    text-decoration: none !important;
-}
-
-.ck-content a:hover {
-    text-decoration: underline !important;
-}
-
-/* Scrolling container: center content */
-.scrolling-container {
-    display: flex !important;
-    flex-direction: column !important;
-}
-
-/* Ensure full-width notes still work */
-.note-split.full-content-width .note-detail {
-    max-width: none !important;
-}
-
-/* Center content preference */
-body.prefers-centered-content .note-detail {
-    margin-inline: auto !important;
-}
-
-/* Hide promoted attributes by default */
-.promoted-attributes-container {
-    opacity: 0.5;
-    transition: opacity 200ms ease;
-}
-
-.promoted-attributes-container:hover {
-    opacity: 1;
-}
-
-/* Note badges: more subtle */
-.note-badges {
-    opacity: 0.5;
-    transition: opacity 200ms ease;
-}
-
-.title-row:hover .note-badges {
-    opacity: 1;
-}
-
-
-/* ============================================================================
- * 4. TOOLBAR / RIBBON
- *    Hidden by default, appears contextually
- * ============================================================================ */
-
-/* Ribbon: hide by default, fade in on hover/focus */
-.ribbon-container {
-    opacity: 0;
-    max-height: 0;
-    overflow: hidden;
-    transition: opacity 200ms ease, max-height 200ms ease;
-}
-
-.note-split:hover .ribbon-container,
-.note-split:focus-within .ribbon-container,
-.ribbon-container:focus-within {
-    opacity: 1;
-    max-height: 200px;
-}
-
-/* Ribbon top row: cleaner */
-.ribbon-top-row {
-    border-bottom: 1px solid var(--simplify-border-subtle) !important;
-    padding: 2px 8px !important;
-}
-
-/* Ribbon buttons: smaller */
-.ribbon-button-container .ribbon-tab-title {
-    font-size: 0.8em !important;
-    padding: 4px 8px !important;
-}
-
-/* Classic toolbar (CKEditor): subtle background */
-.classic-toolbar-widget {
-    background: var(--simplify-bg-primary) !important;
-    border-bottom: 1px solid var(--simplify-border-subtle) !important;
-}
-
-/* CKEditor toolbar buttons: more compact */
-.ck.ck-toolbar {
-    padding: 2px 4px !important;
-}
-
-.ck.ck-toolbar .ck-button {
-    min-height: 28px !important;
-    min-width: 28px !important;
-    padding: 2px !important;
-}
-
-
-/* ============================================================================
- * 5. TAB BAR / NAVIGATION
- *    Compact, minimal tab design
- * ============================================================================ */
-
-/* Tab row: more compact */
-.tab-row-widget {
-    background: var(--simplify-bg-secondary) !important;
-}
-
-/* Tab bar height: reduce */
-:root {
-    --tab-bar-height: 36px;
-    --tab-height: 30px;
-}
-
-/* Individual tabs: cleaner */
-.note-tab {
-    border-radius: 6px !important;
-    font-size: 0.85em !important;
-    padding: 2px 10px !important;
-    margin: 3px 2px !important;
-}
-
-/* Active tab: subtle distinction */
-.note-tab.active {
-    background-color: var(--simplify-bg-active) !important;
-    font-weight: 500 !important;
-}
-
-/* Tab close button: hidden by default */
+/* Tab close: hidden until hover */
 .note-tab .note-tab-close {
-    opacity: 0;
-    transition: opacity 150ms ease;
+    opacity: 0 !important;
+    transition: opacity 100ms ease !important;
+    font-size: 14px !important;
 }
 
 .note-tab:hover .note-tab-close {
-    opacity: 0.7;
-}
-
-/* New tab button: subtle */
-.note-new-tab {
     opacity: 0.5 !important;
-    transition: opacity 150ms ease;
 }
 
-.note-new-tab:hover {
-    opacity: 1 !important;
-}
-
-
-/* ============================================================================
- * 6. CONTEXT MENUS
- *    Cleaner, reduced to essentials
- * ============================================================================ */
-
-/* Dropdown menus: cleaner look */
-.dropdown-menu {
-    background: var(--simplify-bg-elevated) !important;
-    border: 1px solid var(--simplify-border) !important;
-    border-radius: 10px !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
-    font-size: 0.88em !important;
-    padding: 6px !important;
-}
-
-/* Menu items: cleaner spacing */
-.dropdown-item {
-    border-radius: 6px !important;
-    padding: 6px 10px !important;
-    color: var(--simplify-text-primary) !important;
-}
-
-.dropdown-item:hover,
-.dropdown-item:focus {
-    background: var(--simplify-bg-hover) !important;
-    color: var(--simplify-text-primary) !important;
-}
-
-/* Menu icons: more subtle */
-.dropdown-item .tn-icon {
+/* Tab icon: smaller */
+.note-tab .note-tab-icon {
+    font-size: 13px !important;
     opacity: 0.6 !important;
 }
 
-/* Menu keyboard shortcuts: muted */
-.dropdown-item kbd,
-.dropdown-item .keyboard-shortcut {
-    opacity: 0.4 !important;
-    font-size: 0.85em !important;
+/* New tab button: very subtle */
+.note-new-tab {
+    opacity: 0.3 !important;
+    font-size: 16px !important;
 }
 
-/* Dropdown dividers: subtler */
-.dropdown-divider::after {
-    border-color: var(--simplify-border-subtle) !important;
+.note-new-tab:hover {
+    opacity: 0.8 !important;
+}
+
+/* History navigation buttons: subtle */
+body#trilium-app .tab-history-navigation-buttons {
+    opacity: 0.4 !important;
+}
+
+body#trilium-app .tab-history-navigation-buttons:hover {
+    opacity: 0.8 !important;
 }
 
 
 /* ============================================================================
- * 7. GENERAL CLEANUP
- *    Hide unnecessary UI elements, reduce visual noise
+ * 6. NOTE TITLE - Large and prominent
  * ============================================================================ */
 
-/* Launcher pane: cleaner */
-#launcher-pane {
-    background: var(--simplify-bg-secondary) !important;
-    border-color: var(--simplify-border-subtle) !important;
+/* Old layout title */
+.title-row {
+    border-bottom: none !important;
+    margin: 0 !important;
+    padding: 8px 24px 0 24px !important;
 }
 
-/* Launcher buttons: more subtle */
-#launcher-pane .launcher-button {
-    opacity: 0.7;
-    transition: opacity 150ms ease;
+body#trilium-app .note-title-widget input.note-title {
+    font-size: 28px !important;
+    font-weight: 700 !important;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", system-ui, sans-serif !important;
+    letter-spacing: -0.03em !important;
+    color: #e5e5e7 !important;
+    border: none !important;
+    padding: 8px 0 !important;
+    background: transparent !important;
 }
 
-#launcher-pane .launcher-button:hover {
-    opacity: 1;
+/* New layout inline title */
+body#trilium-app .inline-title {
+    padding-top: 24px !important;
+    padding-inline: 24px !important;
+    max-width: 750px !important;
+    margin-inline: auto !important;
 }
 
-/* Right pane: cleaner */
-#right-pane {
-    border-left: 1px solid var(--simplify-border-subtle) !important;
+body#trilium-app .inline-title > .inline-title-row {
+    gap: 12px !important;
 }
 
-/* Gutter between splits: subtle */
-.gutter {
-    background: var(--simplify-border-subtle) !important;
+body#trilium-app .inline-title > .inline-title-row .note-title-widget {
+    --note-title-size: 28px !important;
 }
 
-/* Hide floating buttons by default */
-.floating-buttons-children {
-    opacity: 0;
-    transition: opacity 200ms ease;
+body#trilium-app .inline-title > .inline-title-row .note-title-widget input.note-title {
+    font-size: 28px !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.03em !important;
 }
 
-.note-split:hover .floating-buttons-children {
-    opacity: 1;
+/* Hide note icon in title (cleaner like Apple Notes) */
+body#trilium-app .inline-title .note-icon-widget,
+body#trilium-app .title-row .note-icon-widget {
+    display: none !important;
 }
 
-/* Modals: cleaner style */
-.modal-content {
-    background: var(--simplify-bg-elevated) !important;
-    border: 1px solid var(--simplify-border) !important;
-    border-radius: 12px !important;
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5) !important;
+/* Title details (date, etc): hidden */
+body#trilium-app .title-details {
+    display: none !important;
 }
 
-/* Buttons: clean, flat style */
-.btn {
-    border-radius: 6px !important;
+
+/* ============================================================================
+ * 7. EDITOR / CONTENT AREA - Clean, centered, lots of whitespace
+ * ============================================================================ */
+
+/* Center pane */
+#center-pane {
+    background: #1c1c1e !important;
+}
+
+/* Note split */
+body#trilium-app .note-split {
+    background: #1c1c1e !important;
+}
+
+/* Scrolling container: flex for centering */
+body#trilium-app .scrolling-container {
+    background: #1c1c1e !important;
+    padding-inline: 24px !important;
+}
+
+/* Note detail: max width and center */
+body#trilium-app .note-detail {
+    max-width: 700px !important;
+    margin-inline: auto !important;
+    width: 100% !important;
+    padding-top: 12px !important;
+}
+
+/* Full width for some note types */
+body#trilium-app .note-split.full-content-width .note-detail,
+body#trilium-app .note-split.type-canvas .note-detail,
+body#trilium-app .note-split.type-relation-map .note-detail,
+body#trilium-app .note-split.type-image .note-detail {
+    max-width: none !important;
+}
+
+/* CKEditor content: clean typography */
+body#trilium-app .ck-content {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif !important;
+    font-size: 15px !important;
+    line-height: 1.75 !important;
+    color: #d1d1d6 !important;
+    letter-spacing: -0.01em !important;
+}
+
+/* Paragraphs */
+body#trilium-app .ck-content p {
+    margin-bottom: 0.7em !important;
+}
+
+/* Headings */
+body#trilium-app .ck-content h1 {
+    font-size: 24px !important;
+    font-weight: 700 !important;
+    margin-top: 1.6em !important;
+    margin-bottom: 0.4em !important;
+    color: #e5e5e7 !important;
+    letter-spacing: -0.02em !important;
+    border-bottom: none !important;
+}
+
+body#trilium-app .ck-content h2 {
+    font-size: 20px !important;
+    font-weight: 600 !important;
+    margin-top: 1.4em !important;
+    margin-bottom: 0.3em !important;
+    color: #e5e5e7 !important;
+    letter-spacing: -0.01em !important;
+    border-bottom: none !important;
+}
+
+body#trilium-app .ck-content h3 {
+    font-size: 17px !important;
+    font-weight: 600 !important;
+    margin-top: 1.2em !important;
+    margin-bottom: 0.3em !important;
+    color: #e5e5e7 !important;
+    border-bottom: none !important;
+}
+
+/* No heading underlines */
+body#trilium-app .ck-content h1,
+body#trilium-app .ck-content h2,
+body#trilium-app .ck-content h3,
+body#trilium-app .ck-content h4 {
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+}
+
+/* Code blocks */
+body#trilium-app .ck-content pre {
+    background: rgba(0, 0, 0, 0.35) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 8px !important;
+    padding: 14px 16px !important;
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+}
+
+body#trilium-app .ck-content code {
+    background: rgba(255, 255, 255, 0.06) !important;
+    padding: 2px 5px !important;
+    border-radius: 4px !important;
     font-size: 0.9em !important;
-    padding: 6px 14px !important;
-    border: 1px solid var(--simplify-border) !important;
-    transition: all 150ms ease;
 }
 
-.btn:hover {
-    background: var(--simplify-bg-hover) !important;
+/* Blockquotes */
+body#trilium-app .ck-content blockquote {
+    border-left: 3px solid #e8935a !important;
+    padding-left: 16px !important;
+    margin-left: 0 !important;
+    color: #98989d !important;
+    font-style: italic !important;
 }
 
-.btn-primary {
-    background: var(--simplify-accent) !important;
-    border-color: var(--simplify-accent) !important;
-    color: #1a1a1e !important;
+/* Links */
+body#trilium-app .ck-content a {
+    color: #6bb0d6 !important;
+    text-decoration: none !important;
 }
 
-.btn-primary:hover {
-    background: #d6833f !important;
-    border-color: #d6833f !important;
+body#trilium-app .ck-content a:hover {
+    text-decoration: underline !important;
 }
 
-/* Tooltips: cleaner */
-.tooltip-inner {
-    background: var(--simplify-bg-elevated) !important;
-    border: 1px solid var(--simplify-border) !important;
-    border-radius: 8px !important;
-    font-size: 0.85em !important;
-    padding: 6px 10px !important;
+/* Lists */
+body#trilium-app .ck-content ul,
+body#trilium-app .ck-content ol {
+    padding-inline-start: 24px !important;
 }
 
-/* Alert bars: cleaner */
-div.alert {
-    background: var(--simplify-bg-elevated) !important;
-    border: 1px solid var(--simplify-border) !important;
-    border-radius: 8px !important;
+body#trilium-app .ck-content li {
+    margin-bottom: 0.3em !important;
 }
 
-/* Search: cleaner input */
-.search-box input {
-    background: var(--simplify-bg-elevated) !important;
-    border: 1px solid var(--simplify-border) !important;
-    border-radius: 8px !important;
+/* Tables */
+body#trilium-app .ck-content table {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body#trilium-app .ck-content td,
+body#trilium-app .ck-content th {
+    border-color: rgba(255, 255, 255, 0.08) !important;
     padding: 8px 12px !important;
 }
 
-/* Form inputs: consistent styling */
-input.form-control,
-select.form-select,
-textarea.form-control {
-    background: rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid var(--simplify-border) !important;
-    border-radius: 6px !important;
-    color: var(--simplify-text-primary) !important;
+/* Images in editor */
+body#trilium-app .ck-content .image {
+    margin: 1em 0 !important;
 }
 
-input.form-control:focus,
-select.form-select:focus,
-textarea.form-control:focus {
-    background: rgba(255, 255, 255, 0.08) !important;
-    border-color: var(--simplify-accent-muted) !important;
-    box-shadow: 0 0 0 2px var(--simplify-accent-muted) !important;
+/* Scroll padding at bottom for comfortable editing */
+body#trilium-app .scroll-padding-widget {
+    min-height: 40vh !important;
 }
 
 
 /* ============================================================================
- * 8. SCROLLBARS
- *    Thin, subtle scrollbars
+ * 8. CONTEXT MENUS & DROPDOWNS
  * ============================================================================ */
 
-/* Webkit scrollbars */
+body#trilium-app .dropdown-menu {
+    background: #2c2c2e !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5) !important;
+    padding: 4px !important;
+    font-size: 13px !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+}
+
+body#trilium-app .dropdown-item {
+    border-radius: 6px !important;
+    padding: 5px 10px !important;
+    color: #e5e5e7 !important;
+    font-size: 13px !important;
+}
+
+body#trilium-app .dropdown-item:hover,
+body#trilium-app .dropdown-item:focus {
+    background: rgba(255, 255, 255, 0.08) !important;
+}
+
+body#trilium-app .dropdown-divider {
+    border-color: rgba(255, 255, 255, 0.06) !important;
+    margin: 2px 8px !important;
+}
+
+
+/* ============================================================================
+ * 9. MODALS & DIALOGS
+ * ============================================================================ */
+
+body#trilium-app .modal-content {
+    background: #2c2c2e !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6) !important;
+}
+
+body#trilium-app .modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+body#trilium-app .modal-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+
+/* ============================================================================
+ * 10. BUTTONS
+ * ============================================================================ */
+
+body#trilium-app .btn {
+    border-radius: 8px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    padding: 6px 14px !important;
+    transition: all 120ms ease !important;
+}
+
+body#trilium-app .btn-primary {
+    background: #e8935a !important;
+    border-color: #e8935a !important;
+    color: #1c1c1e !important;
+}
+
+body#trilium-app .btn-primary:hover {
+    background: #d4813f !important;
+    border-color: #d4813f !important;
+}
+
+
+/* ============================================================================
+ * 11. FORM INPUTS
+ * ============================================================================ */
+
+body#trilium-app input.form-control,
+body#trilium-app select.form-select,
+body#trilium-app textarea.form-control {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 8px !important;
+    color: #e5e5e7 !important;
+    font-size: 13px !important;
+}
+
+body#trilium-app input.form-control:focus,
+body#trilium-app select.form-select:focus,
+body#trilium-app textarea.form-control:focus {
+    border-color: rgba(232, 147, 90, 0.4) !important;
+    box-shadow: 0 0 0 2px rgba(232, 147, 90, 0.15) !important;
+    background: rgba(255, 255, 255, 0.07) !important;
+}
+
+
+/* ============================================================================
+ * 12. SCROLLBARS - Thin and invisible until hovered
+ * ============================================================================ */
+
 ::-webkit-scrollbar {
     width: 6px !important;
     height: 6px !important;
@@ -602,48 +734,64 @@ textarea.form-control:focus {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.15) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
     border-radius: 3px !important;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.25) !important;
+    background: rgba(255, 255, 255, 0.2) !important;
 }
 
-/* Firefox scrollbars */
 * {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+    scrollbar-width: thin !important;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent !important;
 }
 
 
 /* ============================================================================
- * 9. ANIMATIONS & TRANSITIONS
- *    Smooth, subtle transitions
+ * 13. GUTTER / SPLITTER
  * ============================================================================ */
 
-/* Smooth transitions for interactive elements */
-.fancytree-node,
-.note-tab,
-.dropdown-item,
-.btn,
-.launcher-button,
-.icon-action {
-    transition: background-color 150ms ease, opacity 150ms ease, color 150ms ease !important;
+body#trilium-app .gutter {
+    background: rgba(255, 255, 255, 0.03) !important;
+    opacity: 0.5 !important;
 }
 
-/* Note split focus: subtle indicator */
-.note-split:focus-within {
-    outline: none;
+body#trilium-app .gutter:hover {
+    opacity: 1 !important;
+    background: rgba(255, 255, 255, 0.06) !important;
 }
 
-/* Center pane: clean border radius */
-#center-pane {
-    border-radius: 0 !important;
+
+/* ============================================================================
+ * 14. GLOBAL RESETS FOR CLEAN LOOK
+ * ============================================================================ */
+
+/* Remove heading underline style globally */
+body#trilium-app.heading-style-underline .ck-content h1,
+body#trilium-app.heading-style-underline .ck-content h2,
+body#trilium-app.heading-style-underline .ck-content h3 {
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
 }
 
-/* Remove excessive box shadows globally */
-.note-tab,
-.note-tab.active {
+/* Remove box shadows from tabs */
+body#trilium-app .note-tab,
+body#trilium-app .note-tab[active] {
     box-shadow: none !important;
+}
+
+/* Global font override */
+body#trilium-app {
+    --tree-font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif !important;
+    --detail-font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif !important;
+}
+
+/* Smooth transitions on interactive elements */
+body#trilium-app .fancytree-node,
+body#trilium-app .note-tab,
+body#trilium-app .dropdown-item,
+body#trilium-app .btn,
+body#trilium-app .launcher-button {
+    transition: background-color 120ms ease, opacity 120ms ease, color 120ms ease !important;
 }
