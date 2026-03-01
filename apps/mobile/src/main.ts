@@ -134,6 +134,12 @@ async function testConnection(url: string): Promise<{ ok: boolean; error?: strin
             signal: AbortSignal.timeout(10000)
         });
 
+        // 401/403 means the server is reachable but requires authentication
+        // — that's fine, the user will log in via the WebView
+        if (response.status === 401 || response.status === 403) {
+            return { ok: true };
+        }
+
         if (!response.ok) {
             return { ok: false, error: `Server responded with status ${response.status}` };
         }
