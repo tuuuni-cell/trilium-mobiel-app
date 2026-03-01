@@ -62,7 +62,7 @@ async function initNotSyncedOptions(initialized: boolean, opts: NotSyncedOpts = 
     optionService.createOption("lastSyncedPull", "0", false);
     optionService.createOption("lastSyncedPush", "0", false);
 
-    optionService.createOption("theme", "next", false);
+    optionService.createOption("theme", "next-dark", false);
     optionService.createOption("textNoteEditorType", "ckeditor-classic", true);
 
     optionService.createOption("syncServerHost", opts.syncServerHost || "", false);
@@ -111,15 +111,15 @@ const defaultOptions: DefaultOption[] = [
     { name: "eraseEntitiesAfterTimeScale", value: "86400", isSynced: true }, // default 86400 seconds = Day
     { name: "hideArchivedNotes_main", value: "false", isSynced: false },
     { name: "debugModeEnabled", value: "false", isSynced: false },
-    { name: "headingStyle", value: "underline", isSynced: true },
+    { name: "headingStyle", value: "plain", isSynced: true },
     { name: "autoCollapseNoteTree", value: "true", isSynced: true },
     { name: "autoReadonlySizeText", value: "32000", isSynced: false },
     { name: "autoReadonlySizeCode", value: "64000", isSynced: false },
     { name: "dailyBackupEnabled", value: "true", isSynced: false },
     { name: "weeklyBackupEnabled", value: "true", isSynced: false },
     { name: "monthlyBackupEnabled", value: "true", isSynced: false },
-    { name: "maxContentWidth", value: "1200", isSynced: false },
-    { name: "centerContent", value: "false", isSynced: false },
+    { name: "maxContentWidth", value: "750", isSynced: false },
+    { name: "centerContent", value: "true", isSynced: false },
     { name: "compressImages", value: "true", isSynced: true },
     { name: "downloadImagesAutomatically", value: "true", isSynced: true },
     { name: "minTocHeadings", value: "5", isSynced: true },

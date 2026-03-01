@@ -68,6 +68,8 @@ function loadStylesheets() {
             cssToLoad.push(`${assetPath}/stylesheets/theme-next-light.css`);
         }
         cssToLoad.push(`${assetPath}/stylesheets/style.css`);
+        // Simplified UI layer - loaded last to override all other styles
+        cssToLoad.push(`${assetPath}/stylesheets/simplify-ui.css`);
     }
 
     for (const href of cssToLoad) {
