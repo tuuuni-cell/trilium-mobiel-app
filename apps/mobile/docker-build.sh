@@ -8,7 +8,7 @@
 # Usage:
 #   cd apps/mobile
 #   chmod +x docker-build.sh
-#   ./docker-build.sh
+#   ./docker-build.sh [--no-cache]
 #
 # Output: ./output/trilium-notes-debug.apk
 # ============================================================================
@@ -26,10 +26,20 @@ echo ""
 # Create output directory
 mkdir -p "${OUTPUT_DIR}"
 
+# Parse optional flags
+DOCKER_BUILD_FLAGS=""
+if [ "$1" = "--no-cache" ]; then
+    DOCKER_BUILD_FLAGS="--no-cache"
+    echo "  (Building with --no-cache)"
+    echo ""
+fi
+
 echo "[1/3] Building Docker image (this may take 10-15 min on first run)..."
 echo "     Build context: ${SCRIPT_DIR}/../.."
 echo ""
 docker build \
+    --progress=plain \
+    ${DOCKER_BUILD_FLAGS} \
     -f "${SCRIPT_DIR}/Dockerfile.android" \
     -t trilium-mobile-builder \
     "${SCRIPT_DIR}/../.."
